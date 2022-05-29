@@ -1,0 +1,37 @@
+services:
+  api:
+    container_name: sample-api-container
+    build:
+      dockerfile:  docker/app/Dockerfile
+      context: .
+    volumes:
+      - type: bind
+        source: ./docker/app/src
+        target: /app/app
+    ports:
+      - '80:80'
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: sample_db
+      DB_USER: sample_user
+      DB_PASSWORD: sample_password
+      TZ: Asia/Tokyo
+
+  db:
+    container_name: sample-mysql-container
+    build:
+      dockerfile:  docker/db/Dockerfile
+      context: .
+    volumes:
+      - type: volume
+        source: sample-mysql-volume
+        target: /var/lib/mysql
+      - type: bind
+        source: ./docker/db/init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+    ports:
+      - '3306:3306'
+
+volumes:
+  sample-mysql-volume:
